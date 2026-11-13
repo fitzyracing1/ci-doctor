@@ -1,3 +1,15 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/logo/ci-doctor-wordmark-dark.png">
+    <img src="assets/brand/logo/ci-doctor-wordmark-light.png" alt="ci-doctor" width="420">
+  </picture>
+</p>
+
+<p align="center">
+  <img src="assets/brand/ci-doctor-demo.gif" alt="ci-doctor scanning the workflows of fitzyracing1/jess: 0 errors, 9 warnings, 5 notices, each with the file, line and fix" width="800">
+  <br><sub>Real output from <a href="https://github.com/fitzyracing1/jess/actions/runs/43396327866">fitzyracing1/jess run 43396327866</a></sub>
+</p>
+
 # 🩺 ci-doctor
 
 **Builds a custom checker for your repo and catches the GitHub deprecations that quietly break CI, then tells you the exact line to change.**
