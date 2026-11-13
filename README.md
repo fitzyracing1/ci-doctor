@@ -121,12 +121,13 @@ npm run build   # bundles src/ into dist/index.js (commit it)
 
 ## Roadmap (planned, not live yet)
 
-**Sales pitches in a bot.** ci-doctor is the pitch: it diagnoses a repo's CI, writes up the quote, and the fix and the story follow from there. Today only the diagnosis exists. The rest is planned:
+ci-doctor is the free first step of a bigger plan. Nothing below exists yet:
 
 1. **Diagnose and quote.** ci-doctor finds what's breaking a repo's CI and gives the owner a clear list of the parts that need fixing.
 2. **Fixed for you (paid).** Owners who'd rather not do it themselves can have Joshua's team fix it for a set price.
 3. **A bot built for your repo.** When the fix lands, the owner is told it was done by a custom bot built for their repo, the same per-repo profile idea ci-doctor starts with.
-4. **Told in public.** Each fix becomes a short CI-fix write-up on X, part of the *go to Mars with the Sunrise protocol* story.
+4. **Sales pitches in a bot.** ci-doctor itself acts as the pitch: it diagnoses the CI, generates the quote, and the fix and the story follow.
+5. **Told in public.** Each fix becomes a short CI-fix write-up on X, part of the *go to Mars with the Sunrise protocol* story.
 
 ## Sponsor
 
