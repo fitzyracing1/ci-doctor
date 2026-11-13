@@ -1,0 +1,5 @@
+name: old-local-action
+description: fixture
+runs:
+  using: node16
+  main: index.js

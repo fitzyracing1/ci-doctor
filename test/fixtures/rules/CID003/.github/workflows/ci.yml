@@ -1,0 +1,13 @@
+name: CID003
+on: push
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+      - uses: actions/setup-python@v5.1.0
+      - uses: actions/checkout@0123456789abcdef0123456789abcdef01234567
+      - uses: actions/github-script@v8

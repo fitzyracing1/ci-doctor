@@ -1,0 +1,13 @@
+version: 1
+generated: 2026-11-01
+languages: [node]
+package-managers: [npm]
+checks: [CID003, CID004, CID005, CID006, CID009, CID012]
+workflows:
+  - .github/workflows/ci.yml
+actions:
+  actions/checkout: v4
+  actions/setup-node: v4
+runners: [ubuntu-latest]
+versions:
+  node: ['22', '24']

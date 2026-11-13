@@ -1,0 +1,13 @@
+name: CID001
+on: push
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - uses: actions/download-artifact@v2

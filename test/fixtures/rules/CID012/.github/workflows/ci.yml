@@ -1,0 +1,12 @@
+name: CID012
+on: push
+permissions:
+  contents: read
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: true

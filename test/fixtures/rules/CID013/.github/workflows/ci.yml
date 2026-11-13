@@ -1,0 +1,9 @@
+name: CID013
+on: push
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./

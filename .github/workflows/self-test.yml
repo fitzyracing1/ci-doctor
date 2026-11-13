@@ -1,0 +1,97 @@
+name: Self-test
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  fixtures:
+    name: rules on fixtures (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Broken fixture (artifact v3)
+        id: broken
+        uses: ./
+        with:
+          path: test/fixtures/rules/CID001
+          upload-profile: 'false'
+      - name: Clean fixture
+        id: clean
+        uses: ./
+        with:
+          path: test/fixtures/clean
+          default-branch: main
+          upload-profile: 'false'
+      - name: fail-on error fails the step
+        id: strict
+        continue-on-error: true
+        uses: ./
+        with:
+          path: test/fixtures/rules/CID005
+          fail-on: error
+          annotations: 'false'
+          upload-profile: 'false'
+      - name: Check outputs
+        shell: bash
+        env:
+          BROKEN_ERRORS: ${{ steps.broken.outputs.errors }}
+          CLEAN_TOTAL: ${{ steps.clean.outputs.total }}
+          STRICT_OUTCOME: ${{ steps.strict.outcome }}
+        run: |
+          set -x
+          test "$BROKEN_ERRORS" = "2"
+          test "$CLEAN_TOTAL" = "0"
+          test "$STRICT_OUTCOME" = "failure"
+
+  profile:
+    name: per-repo profile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: First run on a multi-language repo generates a profile
+        id: first
+        uses: ./
+        with:
+          path: test/fixtures/repos/multi
+          write-profile: 'true'
+      - name: Second run uses it
+        id: second
+        uses: ./
+        with:
+          path: test/fixtures/repos/multi
+      - name: Drifted repo
+        id: drift
+        uses: ./
+        with:
+          path: test/fixtures/repos/drift
+          upload-profile: 'false'
+      - name: Check profile flow
+        shell: bash
+        env:
+          FIRST: ${{ steps.first.outputs.profile-generated }}
+          SECOND: ${{ steps.second.outputs.profile-generated }}
+          DRIFT: ${{ steps.drift.outputs.findings }}
+        run: |
+          set -x
+          test "$FIRST" = "true"
+          test -f test/fixtures/repos/multi/.github/ci-doctor.yml
+          grep -q 'CID001' test/fixtures/repos/multi/.github/ci-doctor.yml
+          test "$SECOND" = "false"
+          echo "$DRIFT" | grep -q CID014
+          echo "$DRIFT" | grep -q CID002
+
+  dogfood:
+    name: ci-doctor on this repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./
+        with:
+          exclude: test
+          fail-on: warn

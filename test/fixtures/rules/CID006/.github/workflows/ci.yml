@@ -1,0 +1,23 @@
+name: CID006
+on: push
+permissions:
+  contents: read
+jobs:
+  node:
+    strategy:
+      matrix:
+        node-version: [16, 18.x, 24]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.7'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: 3.10

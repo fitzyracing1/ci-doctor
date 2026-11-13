@@ -1,0 +1,14 @@
+name: CID008
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches-ignore:
+      - master
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
