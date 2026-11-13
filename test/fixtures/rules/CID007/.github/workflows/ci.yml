@@ -1,0 +1,10 @@
+name: CID007
+on: push
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: pip install flake8 black
+      - run: pip install "ruff==0.14.0" -r requirements.txt

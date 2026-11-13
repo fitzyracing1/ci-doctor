@@ -1,0 +1,103 @@
+name: 'CI Doctor by fitzyracing1'
+description: 'Builds a custom checker for your repo and flags the deprecations that silently break GitHub Actions, with the exact fix.'
+author: 'Joshua Almeida (fitzyracing1)'
+branding:
+  icon: 'activity'
+  color: 'green'
+inputs:
+  path:
+    description: 'Directory to scan (must contain .github/workflows). Relative to the workspace.'
+    required: false
+    default: '.'
+  fail-on:
+    description: 'Fail the step on findings at this level or worse: none (default, never fails), warn, or error.'
+    required: false
+    default: 'none'
+  ignore:
+    description: 'Comma-separated rule IDs to skip, e.g. "CID009,CID011".'
+    required: false
+    default: ''
+  exclude:
+    description: 'Comma-separated directories (relative to path) to skip when looking for action.yml files.'
+    required: false
+    default: ''
+  profile:
+    description: 'Where the per-repo profile lives, relative to path.'
+    required: false
+    default: '.github/ci-doctor.yml'
+  use-profile:
+    description: 'Use the profile when it exists (true/false). When false, a fresh profile is generated every run.'
+    required: false
+    default: 'true'
+  write-profile:
+    description: 'When no profile exists, also write the generated one into the workspace so a later step or PR can commit it (true/false).'
+    required: false
+    default: 'false'
+  upload-profile:
+    description: 'When a profile is generated, upload it as the ci-doctor-profile artifact (true/false).'
+    required: false
+    default: 'true'
+  default-branch:
+    description: 'Default branch name for the branch-filter check. Detected automatically when empty.'
+    required: false
+    default: ''
+  annotations:
+    description: 'Emit file annotations (true/false).'
+    required: false
+    default: 'true'
+  scan-actions:
+    description: 'Also scan action.yml files found in the repository (true/false).'
+    required: false
+    default: 'true'
+outputs:
+  errors:
+    description: 'Number of error findings.'
+    value: ${{ steps.doctor.outputs.errors }}
+  warnings:
+    description: 'Number of warning findings.'
+    value: ${{ steps.doctor.outputs.warnings }}
+  notices:
+    description: 'Number of notice findings.'
+    value: ${{ steps.doctor.outputs.notices }}
+  total:
+    description: 'Total number of findings.'
+    value: ${{ steps.doctor.outputs.total }}
+  findings:
+    description: 'All findings as a JSON array.'
+    value: ${{ steps.doctor.outputs.findings }}
+  profile-generated:
+    description: '"true" when no profile existed and one was generated this run.'
+    value: ${{ steps.doctor.outputs.profile-generated }}
+  profile:
+    description: 'The generated profile YAML (only when profile-generated is true).'
+    value: ${{ steps.doctor.outputs.profile }}
+runs:
+  using: 'composite'
+  steps:
+    - id: doctor
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_FAIL-ON: ${{ inputs.fail-on }}
+        INPUT_IGNORE: ${{ inputs.ignore }}
+        INPUT_EXCLUDE: ${{ inputs.exclude }}
+        INPUT_PROFILE: ${{ inputs.profile }}
+        INPUT_USE-PROFILE: ${{ inputs.use-profile }}
+        INPUT_WRITE-PROFILE: ${{ inputs.write-profile }}
+        INPUT_DEFAULT-BRANCH: ${{ inputs.default-branch || github.event.repository.default_branch }}
+        INPUT_ANNOTATIONS: ${{ inputs.annotations }}
+        INPUT_SCAN-ACTIONS: ${{ inputs.scan-actions }}
+      run: |
+        if ! command -v node >/dev/null 2>&1; then
+          echo "::notice title=ci-doctor::Node.js is not on PATH on this runner, so ci-doctor skipped the scan. Add actions/setup-node before it."
+          exit 0
+        fi
+        node "$GITHUB_ACTION_PATH/dist/index.js"
+    - if: steps.doctor.outputs.profile-generated == 'true' && inputs.upload-profile == 'true'
+      uses: actions/upload-artifact@v7
+      continue-on-error: true
+      with:
+        name: ci-doctor-profile
+        path: ${{ runner.temp }}/ci-doctor-profile/ci-doctor.yml
+        overwrite: true
+        if-no-files-found: ignore

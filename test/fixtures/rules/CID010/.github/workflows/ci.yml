@@ -1,0 +1,17 @@
+name: CID010
+on: push
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: node
+    services:
+      db:
+        image: postgres:latest
+      cache:
+        image: redis:7.4
+      s3:
+        image: adobe/s3mock@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    steps:
+      - run: true
